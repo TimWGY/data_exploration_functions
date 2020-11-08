@@ -36,6 +36,9 @@ def import_libraries():
   pd.set_option('display.max_rows', 100)
   print('Importing Done')
 
+
+import_libraries()
+
 # -------------------------------------Data Selection----------------------------------------------
 
 
