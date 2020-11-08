@@ -130,7 +130,7 @@ def build_criteria(col, value, data, sign_type=' is '):
     return data[col] != value
   elif sign_type == ' is in ':
     if pd.api.types.is_numeric_dtype(data[col].dtype) and len(value) == 2:
-      return (data[col] >= value[0]) & (data[col] < value[1])
+      return (data[col] >= float(value[0])) & (data[col] < float(value[1]))
     else:
       return data[col].isin(value)
   elif sign_type == ' is ':
