@@ -242,35 +242,35 @@ def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, pl
   return value_counts_df
 
 
-# -----------------------------Correlation & Regression------------------------------------------
+# # -----------------------------Correlation & Regression------------------------------------------
 
-def show_corr(cols, data=regression_df):
+# def show_corr(cols, data=regression_df):
 
-  if isinstance(cols, str):
-    cols = cols.strip().split()
-  try:
-    corr_df = data[cols].copy().corr()
-  except KeyError as e:
-    print('Variable "' + re.findall(r"\[\'(.*?)\'\]", str(e))[0] + '" not found, check your spelling please.')
-    return
+#   if isinstance(cols, str):
+#     cols = cols.strip().split()
+#   try:
+#     corr_df = data[cols].copy().corr()
+#   except KeyError as e:
+#     print('Variable "' + re.findall(r"\[\'(.*?)\'\]", str(e))[0] + '" not found, check your spelling please.')
+#     return
 
-  cmap = sns.diverging_palette(10, 130, as_cmap=True)  # red green
+#   cmap = sns.diverging_palette(10, 130, as_cmap=True)  # red green
 
-  corr = corr_df.values
-  np.fill_diagonal(corr, np.nan)
-  corr = np.triu(corr, k=1)
-  corr[corr == 0] = np.nan
-  labels = corr_df.columns
+#   corr = corr_df.values
+#   np.fill_diagonal(corr, np.nan)
+#   corr = np.triu(corr, k=1)
+#   corr[corr == 0] = np.nan
+#   labels = corr_df.columns
 
-  plt.figure(figsize=(5, 4), dpi=default_dpi)
-  sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, xticklabels=labels, yticklabels=labels)
+#   plt.figure(figsize=(5, 4), dpi=default_dpi)
+#   sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, xticklabels=labels, yticklabels=labels)
 
 
-def run_regression(design, data=regression_df):
-  variables = design.replace('~', ' ').replace('+', ' ').split()
-  selected_data = data[variables].copy()
-  scaled_data = pd.DataFrame(sklearn.preprocessing.RobustScaler().fit_transform(X=selected_data), columns=selected_data.columns)
-  y, X = patsy.dmatrices(design, data=scaled_data, return_type='dataframe')   # Split data columns
-  mod = sm.OLS(y, X)
-  res = mod.fit()
-  print(res.summary())
+# def run_regression(design, data=regression_df):
+#   variables = design.replace('~', ' ').replace('+', ' ').split()
+#   selected_data = data[variables].copy()
+#   scaled_data = pd.DataFrame(sklearn.preprocessing.RobustScaler().fit_transform(X=selected_data), columns=selected_data.columns)
+#   y, X = patsy.dmatrices(design, data=scaled_data, return_type='dataframe')   # Split data columns
+#   mod = sm.OLS(y, X)
+#   res = mod.fit()
+#   print(res.summary())
