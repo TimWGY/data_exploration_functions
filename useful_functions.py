@@ -151,7 +151,8 @@ def get_multiple_criteria(string, data):
 
 def select_data(criteria_string, data):
   '''Provide a comma separated criteria_string, and specify which dataframe (df) to select from'''
-  criteria_filter = get_multiple_criteria(criteria_string, data.copy())
+  data = data.reset_index(drop=True).copy()
+  criteria_filter = get_multiple_criteria(criteria_string, data)
   return data[criteria_filter].copy()
 
 # -------------------------------------Smart Data Description-------------------------------------------
