@@ -86,30 +86,54 @@ def replace_first_occurence_of_sign(string, sign, replacement):
   new_string = string[:first_position_of_sign] + replacement + string[first_position_of_sign + len(sign):]
   return new_string
 
+def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
+
+  sign = ' ' + sign.strip() + ' '
+  alternative_sign = ' ' + alternative_sign.strip() + ' '
+  left_side_of_sign_or_alt_sign_is_valid_col = ((string.split(sign, maxsplit=1)[0].strip() in valid_cols) or (string.split(alternative_sign, maxsplit=1)[0].strip() in valid_cols))
+  if (sign in string or alternative_sign in string) and left_side_of_sign_or_alt_sign_is_valid_col:
+    string = replace_first_occurence_of_sign(string, sign, alternative_sign)
+    col = string.split(alternative_sign.strip())[0].strip()
+    value = string.split(alternative_sign.strip())[1].strip()
+    if sign == ' is in ':
+      assert(value[0] == '[' and value[-1] == ']')
+      value = [option.strip() for option in value[1:-1].split('|')]
+    else:
+      value = float(value) if value.isnumeric() else value
+    return build_criteria(col, value, data, sign_type=sign)
+  else:
+    return False
+
 def build_criteria_from_string(string, data):
 
-  if ' is not ' in string or ' != ' in string:
-    string = replace_first_occurence_of_sign(string, ' is not ', ' != ')
-    col = string.split('!=')[0].strip()
-    value = string.split('!=')[1].strip()
-    value = float(value) if value.isnumeric() else value
-    return build_criteria(col, value, data, equal_or_not=False)
-  elif ' is ' in string or ' = ' in string:
-    string = replace_first_occurence_of_sign(string, ' is ', ' = ')
-    col = string.split('=')[0].strip()
-    value = string.split('=')[1].strip()
-    value = float(value) if value.isnumeric() else value
-    return build_criteria(col, value, data, equal_or_not=True)
+  valid_cols = data.columns.tolist()
+
+  criteria = check_for_criteria_type(string, data, ' is not ', ' != ', valid_cols)
+  if criteria:
+    return criteria
+
+  criteria = check_for_criteria_type(string, data, ' is in ', ' is in ', valid_cols)
+  if criteria:
+    return criteria
+
+  criteria = check_for_criteria_type(string, data, ' is ', ' = ', valid_cols)
+  if criteria:
+    return criteria
 
 
-def build_criteria(col, value, data, equal_or_not=True):
-  if equal_or_not:
-    return data[col] == value
-  else:
+def build_criteria(col, value, data, sign_type=' is '):
+
+  if sign_type == ' is not ':
     return data[col] != value
+  elif sign_type == ' is in ':
+    return data[col].isin(value)
+  elif sign_type == ' is ':
+    return data[col] == value
 
 
 def get_multiple_criteria(string, data):
+  if ' is in ' in string:
+    string = check_parenthesis_and_replace_comma_within_parenthesis(string)
   multiple_criteria = [c.strip() for c in string.split(',')]
   multiple_criteria = [c + ' = 1' if (' = ' not in c) and (' is ' not in c) and (c in data.columns) else c for c in multiple_criteria]
   multiple_criteria_filters = [build_criteria_from_string(c, data) for c in multiple_criteria]
