@@ -213,6 +213,7 @@ def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, pl
 
   plot_top_k = 10 if plot_top_k == -1 else plot_top_k
   graph_df = value_counts_df['Proportion in Data (%)'][:plot_top_k].copy()
+  graph_df = graph_df.sort_index()
 
   if plot_type == '':
     plot_type = 'bar' if graph_df.sum() < thres else 'pie'
