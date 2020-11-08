@@ -30,6 +30,9 @@ def import_libraries():
   global_import('numpy', 'np')
   global_import('seaborn', 'sns')
   global_import('matplotlib.pyplot', 'plt')
+  global_import('statsmodels.api', 'sm')
+  global_import('patsy')
+  global_import('sklearn')
   global_import('re')
   pd.set_option('display.max_columns', 100)
   pd.set_option('display.max_rows', 100)
@@ -70,7 +73,7 @@ def check_parenthesis_and_replace_comma_within_parenthesis(string):
       else:
         return False
 
-    if head == ',' and waiting_to_close == True:
+    if (head == ',' or head == ':') and waiting_to_close == True:
       output.append('|')
     else:
       output.append(head)
@@ -126,7 +129,10 @@ def build_criteria(col, value, data, sign_type=' is '):
   if sign_type == ' is not ':
     return data[col] != value
   elif sign_type == ' is in ':
-    return data[col].isin(value)
+    if pd.api.types.is_numeric_dtype(data[col].dtype) and len(value) == 2:
+      return (data[col] >= value[0]) & (data[col] < value[1])
+    else:
+      return data[col].isin(value)
   elif sign_type == ' is ':
     return data[col] == value
 
@@ -164,7 +170,12 @@ def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, pl
     plt.figure(figsize=(9, 6), dpi=default_dpi)
     plt.hist(data[col].dropna(), bins=bins)
     plt.title(f"Distribution of the {col}")
-    return
+    basic_stats = data[col].dropna().describe().reset_index()
+    basic_stats.columns = ['Field', 'Value']
+    basic_stats.Field = ['Total Count', 'Mean', 'Standard Deviation', 'Minimum', 'Value at 25% Percentile', 'Median (50% Percentile)', 'Value at 75% Percentile', 'Maximum']
+    basic_stats.loc[basic_stats.Field.isin(['Mean', 'Standard Deviation']), 'Value'] = basic_stats.loc[basic_stats.Field.isin(['Mean', 'Standard Deviation']), 'Value'].apply(lambda x: np.round(x, 2))
+    basic_stats.loc[~basic_stats.Field.isin(['Mean', 'Standard Deviation']), 'Value'] = basic_stats.loc[~basic_stats.Field.isin(['Mean', 'Standard Deviation']), 'Value'].apply(int).apply(str)
+    return basic_stats
 
   ser = data[col].value_counts()
   ser.name = 'Absolute Number'
@@ -229,3 +240,37 @@ def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, pl
   print()
 
   return value_counts_df
+
+
+# -----------------------------Correlation & Regression------------------------------------------
+
+def show_corr(cols, data=regression_df):
+
+  if isinstance(cols, str):
+    cols = cols.strip().split()
+  try:
+    corr_df = data[cols].copy().corr()
+  except KeyError as e:
+    print('Variable "' + re.findall(r"\[\'(.*?)\'\]", str(e))[0] + '" not found, check your spelling please.')
+    return
+
+  cmap = sns.diverging_palette(10, 130, as_cmap=True)  # red green
+
+  corr = corr_df.values
+  np.fill_diagonal(corr, np.nan)
+  corr = np.triu(corr, k=1)
+  corr[corr == 0] = np.nan
+  labels = corr_df.columns
+
+  plt.figure(figsize=(5, 4), dpi=default_dpi)
+  sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, xticklabels=labels, yticklabels=labels)
+
+
+def run_regression(design, data=regression_df):
+  variables = design.replace('~', ' ').replace('+', ' ').split()
+  selected_data = data[variables].copy()
+  scaled_data = pd.DataFrame(sklearn.preprocessing.RobustScaler().fit_transform(X=selected_data), columns=selected_data.columns)
+  y, X = patsy.dmatrices(design, data=scaled_data, return_type='dataframe')   # Split data columns
+  mod = sm.OLS(y, X)
+  res = mod.fit()
+  print(res.summary())
