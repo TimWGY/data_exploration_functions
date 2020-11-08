@@ -99,10 +99,7 @@ def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
     col = string.split(alternative_sign.strip())[0].strip()
     value = string.split(alternative_sign.strip())[1].strip()
     if sign == ' is in ' or sign == ' is not in ':
-      try:
-        assert(value[0] == '[' and value[-1] == ']')
-      except:
-        print('value', value)
+      assert(value[0] == '[' and value[-1] == ']')
       value = [option.strip() for option in value[1:-1].split('|')]
     else:
       value = float(value) if value.isnumeric() else value
@@ -150,7 +147,7 @@ def build_criteria(col, value, data, sign=' is '):
 
 
 def get_multiple_criteria(string, data):
-  if ' is in ' in string:
+  if ' is in ' or 'is not in' in string:
     string = check_parenthesis_and_replace_comma_within_parenthesis(string)
   multiple_criteria = [c.strip() for c in string.split(',')]
   multiple_criteria = [c + ' = 1' if (' = ' not in c) and (' is ' not in c) and (c in data.columns) else c for c in multiple_criteria]
