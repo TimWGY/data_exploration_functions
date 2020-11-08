@@ -98,18 +98,22 @@ def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
     string = replace_first_occurence_of_sign(string, sign, alternative_sign)
     col = string.split(alternative_sign.strip())[0].strip()
     value = string.split(alternative_sign.strip())[1].strip()
-    if sign == ' is in ':
+    if sign == ' is in ' or sign == ' is not in ':
       assert(value[0] == '[' and value[-1] == ']')
       value = [option.strip() for option in value[1:-1].split('|')]
     else:
       value = float(value) if value.isnumeric() else value
-    return build_criteria(col, value, data, sign_type=sign)
+    return build_criteria(col, value, data, sign=sign)
   else:
     return None
 
 def build_criteria_from_string(string, data):
 
   valid_cols = data.columns.tolist()
+
+  criteria = check_for_criteria_type(string, data, ' is not in ', ' is not in ', valid_cols)
+  if isinstance(criteria, pd.Series):
+    return criteria
 
   criteria = check_for_criteria_type(string, data, ' is not ', ' != ', valid_cols)
   if isinstance(criteria, pd.Series):
@@ -124,17 +128,22 @@ def build_criteria_from_string(string, data):
     return criteria
 
 
-def build_criteria(col, value, data, sign_type=' is '):
+def build_criteria(col, value, data, sign=' is '):
 
-  if sign_type == ' is not ':
-    return data[col] != value
-  elif sign_type == ' is in ':
+  if sign == ' is ' or sign == ' is not ':
+    output = data[col] == value
+
+  elif sign == ' is in ' or sign == ' is not in ':
+
     if pd.api.types.is_numeric_dtype(data[col].dtype) and len(value) == 2:
-      return (data[col] >= float(value[0])) & (data[col] < float(value[1]))
+      output = (data[col] >= float(value[0])) & (data[col] < float(value[1]))
     else:
-      return data[col].isin(value)
-  elif sign_type == ' is ':
-    return data[col] == value
+      output = data[col].isin(value)
+
+  if ' not ' in sign:
+    output = ~output
+
+  return output
 
 
 def get_multiple_criteria(string, data):
