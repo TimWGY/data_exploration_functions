@@ -30,9 +30,9 @@ def import_libraries():
   global_import('numpy', 'np')
   global_import('seaborn', 'sns')
   global_import('matplotlib.pyplot', 'plt')
-  global_import('statsmodels.api', 'sm')
-  global_import('patsy')
-  global_import('sklearn')
+  # global_import('statsmodels.api', 'sm') # AttributeError: module 'statsmodels' has no attribute 'api'
+  # global_import('patsy')
+  # global_import('sklearn')
   global_import('re')
   pd.set_option('display.max_columns', 100)
   pd.set_option('display.max_rows', 100)
