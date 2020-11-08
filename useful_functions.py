@@ -102,22 +102,22 @@ def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
       value = float(value) if value.isnumeric() else value
     return build_criteria(col, value, data, sign_type=sign)
   else:
-    return False
+    return None
 
 def build_criteria_from_string(string, data):
 
   valid_cols = data.columns.tolist()
 
   criteria = check_for_criteria_type(string, data, ' is not ', ' != ', valid_cols)
-  if criteria:
+  if isinstance(criteria, pd.Series):
     return criteria
 
   criteria = check_for_criteria_type(string, data, ' is in ', ' is in ', valid_cols)
-  if criteria:
+  if isinstance(criteria, pd.Series):
     return criteria
 
   criteria = check_for_criteria_type(string, data, ' is ', ' = ', valid_cols)
-  if criteria:
+  if isinstance(criteria, pd.Series):
     return criteria
 
 
