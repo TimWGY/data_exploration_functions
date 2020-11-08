@@ -48,7 +48,7 @@ def load_data(which_year):
     df = pd.read_csv('/content/drive/My Drive/census_' + str(which_year) + '.csv', low_memory=False)
     return df
   except FileNotFoundError as e:
-    print('File Not Found! Please check if you have created Shortcuts for the data files\nin your "My Drive" folder and if you have run the first cell in this notebook.')
+    print('File Not Found! Please check if you have created Shortcuts for the data files\nin your "My Drive" folder and if you have run the first cell in this notebook.\nLink to the data folder: https://drive.google.com/drive/folders/19dZe5h63fdCYNnW421woQv4Z09QABjam')
   except NameError as e:
     print('Function not defined yet! Please check if you have run the first cell in this notebook.')
 
