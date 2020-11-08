@@ -93,7 +93,7 @@ def select_data(criteria_string, data):
 
 # -------------------------------------Smart Data Description-------------------------------------------
 
-def describe(col, data=df, top_k=-1, thres=90, return_full=False, plot_top_k=-1, plot_type='', bins=-1):
+def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, plot_type='', bins=-1):
 
   if data[col].isnull().mean() > 0:
     print(f"Notice: {np.round(data[col].isnull().mean()*100,3)}% of the entries have no records for this field.\n")
