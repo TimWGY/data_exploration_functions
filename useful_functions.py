@@ -99,7 +99,10 @@ def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
     col = string.split(alternative_sign.strip())[0].strip()
     value = string.split(alternative_sign.strip())[1].strip()
     if sign == ' is in ' or sign == ' is not in ':
-      assert(value[0] == '[' and value[-1] == ']')
+      try:
+        assert(value[0] == '[' and value[-1] == ']')
+      except:
+        print('value', value)
       value = [option.strip() for option in value[1:-1].split('|')]
     else:
       value = float(value) if value.isnumeric() else value
