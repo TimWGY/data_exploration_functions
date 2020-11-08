@@ -30,7 +30,6 @@ def import_libraries():
   global_import('numpy', 'np')
   global_import('seaborn', 'sns')
   global_import('matplotlib.pyplot', 'plt')
-
   global_import('re')
   pd.set_option('display.max_columns', 100)
   pd.set_option('display.max_rows', 100)
@@ -53,16 +52,50 @@ def load_data(which_year):
     print('Function not defined yet! Please check if you have run the first cell in this notebook.')
 
 
+def check_parenthesis_and_replace_comma_within_parenthesis(string):
+
+  output = []
+  letters = list(string.strip())
+  waiting_to_close = False
+  while len(letters) > 0:
+    head = letters.pop(0)
+    if head == '[':
+      if waiting_to_close == False:
+        waiting_to_close = True
+      else:
+        return False
+    elif head == ']':
+      if waiting_to_close == True:
+        waiting_to_close = False
+      else:
+        return False
+
+    if head == ',' and waiting_to_close == True:
+      output.append('|')
+    else:
+      output.append(head)
+
+  if waiting_to_close == False:
+    return ''.join(output)
+  else:
+    return False
+
+def replace_first_occurence_of_sign(string, sign, replacement):
+
+  first_position_of_sign = string.index(sign)
+  new_string = string[:first_position_of_sign] + replacement + string[first_position_of_sign + len(sign):]
+  return new_string
+
 def build_criteria_from_string(string, data):
 
   if ' is not ' in string or ' != ' in string:
-    string = string.replace(' is not ', ' != ')
+    string = replace_first_occurence_of_sign(string, ' is not ', ' != ')
     col = string.split('!=')[0].strip()
     value = string.split('!=')[1].strip()
     value = float(value) if value.isnumeric() else value
     return build_criteria(col, value, data, equal_or_not=False)
   elif ' is ' in string or ' = ' in string:
-    string = string.replace(' is ', ' = ')
+    string = replace_first_occurence_of_sign(string, ' is ', ' = ')
     col = string.split('=')[0].strip()
     value = string.split('=')[1].strip()
     value = float(value) if value.isnumeric() else value
