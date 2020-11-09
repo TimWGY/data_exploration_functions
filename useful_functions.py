@@ -34,6 +34,7 @@ def import_libraries():
   # global_import('patsy')
   # global_import('sklearn')
   global_import('glob')
+  global_import('os')
   global_import('re')
   pd.set_option('display.max_columns', 100)
   pd.set_option('display.max_rows', 100)
