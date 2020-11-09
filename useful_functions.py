@@ -222,7 +222,7 @@ def filter_by_keyword(input_list, contain = '', not_contain = '', case_important
 
   return output_list
 
-def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False):
+def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = False):
   if coverage == 'auto':
     if data[col].nunique()>100:
       input_list = get_values_that_covers_threshold_percentage(col, data)
@@ -231,13 +231,16 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
   elif coverage == 'full':
     input_list = data[col].tolist()
   output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
-  return output_list
+  if return_list:
+    return output_list
+  else:
+    print_list(output_list)
 
 def change_values(data, orig_col, change_from, change_to, new_col = ''):
   if isinstance(change_from,list):
     pass
   else:
-    change_from = [x.strip() for x in change_from.split(',')]
+    change_from = [x.strip() for x in change_from.replace('\n','').split(',')]
   if new_col == '':
     print(f'The column "{orig_col}" is changed.')
     new_col = orig_col
