@@ -238,8 +238,8 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
   else:
     print_list(output_list)
 
-def show_filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = False):
-  return filter_values(data = data, col = col, contain = contain, not_contain = not_contain , coverage = coverage, case_important = case_important, return_list = return_list)
+def show_filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = False, order = 'most_first'):
+  return filter_values(data = data, col = col, contain = contain, not_contain = not_contain , coverage = coverage, case_important = case_important, return_list = return_list, order = order)
 
 
 def change_values(data, orig_col, change_from, change_to, new_col = ''):
