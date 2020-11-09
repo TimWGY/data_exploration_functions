@@ -51,12 +51,7 @@ def load_data(which_year):
     print(f'\nThere are {len(df)} entries.\n')
     print('Available columns:\n\n')
     line_length = 0
-    for col in df.columns.tolist():
-      line_length += len(col)
-      print(col, end=', ')
-      if line_length > 90:
-        print()
-        line_length = 0
+    print_list(df.columns.tolist())
     print('\n\n')
 
     return df
@@ -156,7 +151,6 @@ def build_criteria(col, value, data, sign=' is '):
 
   return output
 
-
 def get_multiple_criteria(string, data):
   if ' is in ' or 'is not in' in string:
     string = check_parenthesis_and_replace_comma_within_parenthesis(string)
@@ -174,6 +168,95 @@ def select_data(criteria_string, data):
   data = data.reset_index(drop=True).copy()
   criteria_filter = get_multiple_criteria(criteria_string, data)
   return data[criteria_filter].copy()
+
+# ----------------------------------- Value Selection Based on Keywords ------------------------------------
+
+def get_values_that_covers_threshold_percentage(col, data, thres = 0.9, return_type = 'most_first' ):
+
+  ser = data.copy()[col].value_counts()
+  cumsum_ser = (ser/ser.sum()).cumsum()
+  top_values = cumsum_ser[cumsum_ser<=thres].index.tolist()
+  if return_type == 'most_first':
+    return top_values
+  elif return_type == 'alphabetic':
+    return sorted(top_values)
+  else:
+    return None
+
+
+def check_contain(value, contain_list):
+  contain_or_not = True
+  for keyword in contain_list:
+    if keyword not in value:
+      contain_or_not = False
+      break
+  return contain_or_not
+
+def check_not_contain(value, not_contain_list):
+  not_contain_or_not = True
+  for keyword in not_contain_list:
+    if keyword in value:
+      not_contain_or_not = False
+      break
+  return not_contain_or_not
+
+def filter_by_keyword(input_list, contain = '', not_contain = '', case_important = False):
+
+  output_list = []
+
+  if not case_important:
+    contain = contain.lower()
+    not_contain = not_contain.lower()
+
+  contain = [x.strip() for x in contain.split(',') if x!='']
+  not_contain = [x.strip() for x in not_contain.split(',') if x!='']
+
+  for value in input_list:
+    if not case_important:
+      processed_value = value.lower()
+    else:
+      processed_value = value
+
+    if check_contain(processed_value, contain) and check_not_contain(processed_value, not_contain):
+      output_list.append(value)
+
+  return output_list
+
+def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False):
+  if coverage == 'auto':
+    if data[col].nunique()>100:
+      input_list = get_values_that_covers_threshold_percentage(col, data)
+    else:
+      input_list = data[col].tolist()
+  elif coverage == 'full':
+    input_list = data[col].tolist()
+  output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
+  return output_list
+
+def change_values(data, orig_col, change_from, change_to, new_col = ''):
+  if isinstance(change_from,list):
+    pass
+  else:
+    change_from = [x.strip() for x in change_from.split(',')]
+  if new_col == '':
+    print(f'The column "{orig_col}" is changed.')
+    new_col = orig_col
+  else:
+    print(f'A new column "{new_col}" is created to reflect the change.')
+  data[new_col] = data[orig_col].apply(lambda x: change_to if x in change_from else x)
+
+def filter_and_change_values(data, orig_col, contain = '', not_contain = '', change_to = None, new_col = '', coverage = 'auto', case_important = False):
+  if change_to == None:
+    print('Parameter "change_to" is not specificed.')
+    return
+  change_from = filter_values(data, orig_col,  contain = contain, not_contain = not_contain, coverage = coverage, case_important = case_important)
+  print('Changing from:',)
+  print_list(change_from,indent = 2)
+  print('\nTo:\n  '+change_to+'\n')
+  change_values(data, orig_col, change_from, change_to)
+  return
+
+
 
 # -------------------------------------Smart Data Description-------------------------------------------
 
@@ -295,3 +378,22 @@ def show_corr(cols, data):
 #   mod = sm.OLS(y, X)
 #   res = mod.fit()
 #   print(res.summary())
+
+
+# -------------------- utilities ----------------------
+
+def print_list(list_to_print, indent=0, line_width=90):
+  line_length = 0
+  print(' ' * indent, end='')
+  for val in list_to_print:
+    val = str(val)
+    line_length += len(val)
+    print(val, end=', ')
+    if line_length > line_width:
+      print()
+      print(' ' * indent, end='')
+      line_length = 0
+  print()
+
+
+
