@@ -417,7 +417,7 @@ def print_list(list_to_print, indent=0, line_width=90):
 
 def save_graph(filename = '', quality = 'HD', padding = 0.3, transparent = False):
 
-  if os.path.exists('saved_graphs'):
+  if not os.path.exists('saved_graphs'):
     os.mkdir('saved_graphs')
 
   if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg') or filename.lower().endswith('.png'):
