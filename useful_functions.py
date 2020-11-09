@@ -233,7 +233,6 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
   output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
 
   if return_list:
-    print_list(output_list)
     return output_list
   else:
     print_list(output_list)
@@ -243,6 +242,8 @@ def show_filter_values(data, col, contain = '', not_contain = '' , coverage = 'a
 
 
 def change_values(data, orig_col, change_from, change_to, new_col = ''):
+  if change_to == 'MISSING':
+    change_to = np.nan
   if isinstance(change_from,list):
     pass
   else:
