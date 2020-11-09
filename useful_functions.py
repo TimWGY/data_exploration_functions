@@ -425,7 +425,11 @@ def save_graph(filename = '', quality = 'HD', padding = 0.3, transparent = False
 
   if filename == '':
     image_paths = [p.split('.')[0] for p in glob.glob('./saved_graphs/*')]
-    next_index = max([int(p) for p in image_paths if p.isnumeric()])+1
+    available_indices = [int(p) for p in image_paths if p.isnumeric()]
+    if len(available_indices) == 0:
+      next_index = 1
+    else:
+      next_index = max(available_indices)+1
     filename = str(next_index).zfill(2)+'.png'
 
   if quality == 'SD':
