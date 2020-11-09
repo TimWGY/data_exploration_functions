@@ -418,11 +418,14 @@ def save_graph(filename = 'temp', quality = 'HD', padding = 0.3, transparent = F
   if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg') or filename.lower().endswith('.png'):
     filename = filename+'.png'
 
-  if resolution == 'SD':
+  if filename == '':
+    filename = 'temp'
+
+  if quality == 'SD':
     dpi = 90
-  elif resolution == 'HD':
+  elif quality == 'HD':
     dpi = 150
-  elif resolution == 'Best':
+  elif quality == 'Best':
     dpi = 300
 
   plt.savefig(filename, dpi=dpi, bbox_inches='tight', transparent=transparent, pad_inches=padding)
