@@ -55,7 +55,7 @@ def load_data(which_year, pre_clean = False):
       change_values(df, 'Occupation', change_from = 'None, No Occupation', change_to = 'MISSING')
       from IPython.display import clear_output
       clear_output()
-      print('Pre-cleaning completed.\n')
+      print('\nPre-cleaning completed.')
     print(f'\nThere are {len(df)} entries.\n')
     print('Available columns:\n\n')
     line_length = 0
@@ -413,5 +413,17 @@ def print_list(list_to_print, indent=0, line_width=90):
       line_length = 0
   print()
 
+def save_graph(filename = 'temp', quality = 'HD', padding = 0.3, transparent = False):
 
+  if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg') or filename.lower().endswith('.png'):
+    filename = filename+'.png'
+
+  if resolution == 'SD':
+    dpi = 90
+  elif resolution == 'HD':
+    dpi = 150
+  elif resolution == 'Best':
+    dpi = 300
+
+  plt.savefig(filename, dpi=dpi, bbox_inches='tight', transparent=transparent, pad_inches=padding)
 
