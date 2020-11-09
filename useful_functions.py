@@ -33,6 +33,7 @@ def import_libraries():
   # global_import('statsmodels.api', 'sm') # AttributeError: module 'statsmodels' has no attribute 'api'
   # global_import('patsy')
   # global_import('sklearn')
+  global_import('glob')
   global_import('re')
   pd.set_option('display.max_columns', 100)
   pd.set_option('display.max_rows', 100)
@@ -413,13 +414,18 @@ def print_list(list_to_print, indent=0, line_width=90):
       line_length = 0
   print()
 
-def save_graph(filename = 'temp', quality = 'HD', padding = 0.3, transparent = False):
+def save_graph(filename = '', quality = 'HD', padding = 0.3, transparent = False):
+
+  if os.path.exists('saved_graphs'):
+    os.mkdir('saved_graphs')
 
   if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg') or filename.lower().endswith('.png'):
     filename = filename+'.png'
 
   if filename == '':
-    filename = 'temp'
+    image_paths = [p.split('.')[0] for p in glob.glob('./saved_graphs/*')]
+    next_index = max([int(p) for p in image_paths if p.isnumeric()])+1
+    filename = str(next_index).zfill(2)+'.png'
 
   if quality == 'SD':
     dpi = 90
@@ -428,5 +434,5 @@ def save_graph(filename = 'temp', quality = 'HD', padding = 0.3, transparent = F
   elif quality == 'Best':
     dpi = 300
 
-  plt.savefig(filename, dpi=dpi, bbox_inches='tight', transparent=transparent, pad_inches=padding)
+  plt.savefig('./saved_graphs/'+filename, dpi=dpi, bbox_inches='tight', transparent=transparent, pad_inches=padding)
 
