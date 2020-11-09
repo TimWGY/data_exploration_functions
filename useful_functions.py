@@ -171,14 +171,14 @@ def select_data(criteria_string, data):
 
 # ----------------------------------- Value Selection Based on Keywords ------------------------------------
 
-def get_values_that_covers_threshold_percentage(col, data, thres = 0.9, return_type = 'most_first' ):
+def get_values_that_covers_threshold_percentage(col, data, thres = 0.9, order = 'most_first' ):
 
   ser = data.copy()[col].value_counts()
   cumsum_ser = (ser/ser.sum()).cumsum()
   top_values = cumsum_ser[cumsum_ser<=thres].index.tolist()
-  if return_type == 'most_first':
+  if order == 'most_first':
     return top_values
-  elif return_type == 'alphabetic':
+  elif order == 'alphabetic':
     return sorted(top_values)
   else:
     return None
@@ -222,20 +222,24 @@ def filter_by_keyword(input_list, contain = '', not_contain = '', case_important
 
   return output_list
 
-def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = True):
+def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = True, order = 'most_first'):
   if coverage == 'auto':
     if data[col].nunique()>100:
-      input_list = get_values_that_covers_threshold_percentage(col, data)
+      input_list = get_values_that_covers_threshold_percentage(col, data, order = order)
     else:
-      input_list = data[col].tolist()
+      input_list = get_values_that_covers_threshold_percentage(col, data, thres = 1.0, order = order)
   elif coverage == 'full':
-    input_list = data[col].tolist()
+    input_list = get_values_that_covers_threshold_percentage(col, data, thres = 1.0, order = order)
   output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
+
   if return_list:
     print_list(output_list)
     return output_list
   else:
     print_list(output_list)
+
+def show_filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = False):
+  return filter_values(data = data, col = col, contain = contain, not_contain = not_contain , coverage = coverage, case_important = case_important, return_list = return_list)
 
 
 def change_values(data, orig_col, change_from, change_to, new_col = ''):
