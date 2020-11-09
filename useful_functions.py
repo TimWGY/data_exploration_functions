@@ -237,6 +237,7 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
   else:
     print_list(output_list)
 
+
 def change_values(data, orig_col, change_from, change_to, new_col = ''):
   if isinstance(change_from,list):
     pass
