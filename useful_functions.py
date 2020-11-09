@@ -178,7 +178,7 @@ def get_values_that_covers_threshold_percentage(col, data, thres = 0.9, order = 
   top_values = cumsum_ser[cumsum_ser<=thres].index.tolist()
   if order == 'most_first':
     return top_values
-  elif order == 'alphabetic':
+  elif order == 'alphabetical':
     return sorted(top_values)
   else:
     return None
