@@ -154,7 +154,7 @@ def build_criteria(col, value, data, sign=' is '):
 def get_multiple_criteria(string, data):
   if ' is in ' or 'is not in' in string:
     string = check_parenthesis_and_replace_comma_within_parenthesis(string)
-  multiple_criteria = [c.strip() for c in string.split(',')]
+  multiple_criteria = [c.strip() for c in string.split(',') if c.strip()!='']
   multiple_criteria = [c + ' = 1' if (' = ' not in c) and (' is ' not in c) and (c in data.columns) else c for c in multiple_criteria]
   multiple_criteria_filters = [build_criteria_from_string(c, data) for c in multiple_criteria]
   combined_filter = pd.Series([True] * len(data))
@@ -222,7 +222,7 @@ def filter_by_keyword(input_list, contain = '', not_contain = '', case_important
 
   return output_list
 
-def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = False):
+def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto', case_important = False, return_list = True):
   if coverage == 'auto':
     if data[col].nunique()>100:
       input_list = get_values_that_covers_threshold_percentage(col, data)
@@ -232,6 +232,7 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
     input_list = data[col].tolist()
   output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
   if return_list:
+    print_list(output_list)
     return output_list
   else:
     print_list(output_list)
@@ -240,7 +241,7 @@ def change_values(data, orig_col, change_from, change_to, new_col = ''):
   if isinstance(change_from,list):
     pass
   else:
-    change_from = [x.strip() for x in change_from.replace('\n','').split(',')]
+    change_from = [x.strip() for x in change_from.replace('\n','').split(',')  if x.strip()!='']
   if new_col == '':
     print(f'The column "{orig_col}" is changed.')
     new_col = orig_col
