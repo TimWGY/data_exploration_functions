@@ -50,9 +50,12 @@ def load_data(which_year, pre_clean = False):
     df = pd.read_csv('/content/drive/My Drive/census_' + str(which_year) + '.csv', low_memory=False)
     if str(which_year)=='1880' and pre_clean:
       filter_and_change_values(df, 'Occupation', contain = 'Keep, House', change_to = 'Keeping House')
+      filter_and_change_values(df, 'Occupation', contain = 'Home', change_to = 'Keeping House')
       filter_and_change_values(df, 'Occupation', contain = 'school', not_contain = 'teach', change_to = 'At School')
       change_values(df, 'Occupation', change_from = 'None, No Occupation', change_to = 'MISSING')
-
+      from IPython.display import clear_output
+      clear_output()
+      print('Pre-cleaning completed.\n')
     print(f'\nThere are {len(df)} entries.\n')
     print('Available columns:\n\n')
     line_length = 0
