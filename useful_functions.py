@@ -423,6 +423,8 @@ def print_list(list_to_print, indent=0, line_width=90):
 
 def save_graph(filename = '', quality = 'HD', padding = 0.3, transparent = False):
 
+  orig_filename = filename
+
   if not os.path.exists('saved_graphs'):
     os.mkdir('saved_graphs')
 
@@ -444,6 +446,9 @@ def save_graph(filename = '', quality = 'HD', padding = 0.3, transparent = False
     dpi = 150
   elif quality == 'Best':
     dpi = 300
+
+  if orig_filename!='':
+    plt.suptitle(orig_filename)
 
   plt.savefig('./saved_graphs/'+filename, dpi=dpi, bbox_inches='tight', transparent=transparent, pad_inches=padding)
 
