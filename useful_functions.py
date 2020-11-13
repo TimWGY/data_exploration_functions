@@ -405,6 +405,9 @@ def show_corr(cols, data):
 
 # -------------------- utilities ----------------------
 
+def proportion(small_data, big_data, rounding = 3):
+  return round(len(small_data)/len(big_data), rounding)
+
 def print_list(list_to_print, indent=0, line_width=90):
   line_length = 0
   print(' ' * indent, end='')
