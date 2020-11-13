@@ -147,7 +147,10 @@ def build_criteria_from_string(string, data):
 def build_criteria(col, value, data, sign=' is '):
 
   if sign == ' is ' or sign == ' is not ':
-    output = data[col] == value
+    if value == 'MISSING':
+      output = data[col].isnull()
+    else:
+      output = data[col] == value
 
   elif sign == ' is in ' or sign == ' is not in ':
 
