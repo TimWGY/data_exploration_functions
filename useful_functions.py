@@ -243,6 +243,9 @@ def filter_values(data, col, contain = '', not_contain = '' , coverage = 'auto',
       input_list = get_values_that_covers_threshold_percentage(col, data, thres = 1.0, order = order)
   elif coverage == 'full':
     input_list = get_values_that_covers_threshold_percentage(col, data, thres = 1.0, order = order)
+
+  input_list = [item for item in input_list if isinstance(item,str)]
+
   output_list = filter_by_keyword(input_list, contain = contain, not_contain = not_contain, case_important = case_important)
 
   if return_list:
