@@ -226,12 +226,7 @@ def filter_by_keyword(input_list, contain = '', not_contain = '', case_important
 
   for value in input_list:
     if not case_important:
-      try:
-        processed_value = value.lower()
-      except:
-        print(value)
-        print(type(value))
-        raise
+      processed_value = value.lower()
     else:
       processed_value = value
 
