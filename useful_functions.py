@@ -286,7 +286,7 @@ def filter_and_change_values(data, orig_col, contain = '', not_contain = '', cha
 
 # -------------------------------------Smart Data Description-------------------------------------------
 
-def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, plot_type='', bins=-1):
+def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, plot_type='', bins=-1, show_graph = True):
 
   if data[col].isnull().mean() > 0:
     print(f"Notice: {np.round(data[col].isnull().mean()*100,3)}% of the entries have no records for this field.\n")
@@ -331,43 +331,44 @@ def describe(col, data, top_k=-1, thres=90, return_full=False, plot_top_k=-1, pl
   if top_k < len(full_value_counts_df) and not return_full:
     print(f'{len(full_value_counts_df)-top_k} more rows are available, add "return_full = True" if you want to see all.\n')
 
-  plot_top_k = 10 if plot_top_k == -1 else plot_top_k
-  graph_df = value_counts_df['Proportion in Data (%)'][:plot_top_k].copy()
+  if show_graph:
+    plot_top_k = 10 if plot_top_k == -1 else plot_top_k
+    graph_df = value_counts_df['Proportion in Data (%)'][:plot_top_k].copy()
 
-  if plot_type == '':
-    plot_type = 'bar' if graph_df.sum() < thres else 'pie'
+    if plot_type == '':
+      plot_type = 'bar' if graph_df.sum() < thres else 'pie'
 
-  if plot_type == 'pie':
+    if plot_type == 'pie':
 
-    fig, ax = plt.subplots(figsize=(9, 6), dpi=default_dpi, subplot_kw=dict(aspect="equal"))
+      fig, ax = plt.subplots(figsize=(9, 6), dpi=default_dpi, subplot_kw=dict(aspect="equal"))
 
-    values = graph_df.values.tolist()
-    names = graph_df.index.tolist()
+      values = graph_df.values.tolist()
+      names = graph_df.index.tolist()
 
-    def func(pct, allvals):
-      absolute = int(pct / 100. * np.sum(allvals))
-      return "{:.1f}%".format(pct, absolute)
+      def func(pct, allvals):
+        absolute = int(pct / 100. * np.sum(allvals))
+        return "{:.1f}%".format(pct, absolute)
 
-    wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values), textprops=dict(color="w"))
+      wedges, texts, autotexts = ax.pie(values, autopct=lambda pct: func(pct, values), textprops=dict(color="w"))
 
-    for w in wedges:
-      w.set_edgecolor('white')
+      for w in wedges:
+        w.set_edgecolor('white')
 
-    ax.legend(wedges, names,
-              title="Categories",
-              loc="center left",
-              bbox_to_anchor=(1, 0, 0.8, 1))
+      ax.legend(wedges, names,
+                title="Categories",
+                loc="center left",
+                bbox_to_anchor=(1, 0, 0.8, 1))
 
-    plt.setp(autotexts, size=12, weight="bold")
+      plt.setp(autotexts, size=12, weight="bold")
 
-    ax.set_title(f"Relative Proportion of Top {len(graph_df)} {col}" if len(graph_df) < len(full_value_counts_df) else f"Proportion of {col}")
+      ax.set_title(f"Relative Proportion of Top {len(graph_df)} {col}" if len(graph_df) < len(full_value_counts_df) else f"Proportion of {col}")
 
-  if plot_type == 'bar':
-    plt.figure(figsize=(9, 6), dpi=default_dpi)
-    graph_df.plot(kind='bar')
-    plt.title(f"Barplot of the Top {len(graph_df)} {col} - (y axis shows percentage)")
+    if plot_type == 'bar':
+      plt.figure(figsize=(9, 6), dpi=default_dpi)
+      graph_df.plot(kind='bar')
+      plt.title(f"Barplot of the Top {len(graph_df)} {col} - (y axis shows percentage)")
 
-  print()
+    print()
 
   return value_counts_df
 
