@@ -116,7 +116,7 @@ def check_for_criteria_type(string, data, sign, alternative_sign, valid_cols):
     value = string.split(alternative_sign.strip())[1].strip()
     if sign == ' is in ' or sign == ' is not in ':
       assert(value[0] == '[' and value[-1] == ']')
-      value = [option.strip() for option in value[1:-1].split('|')]
+      value = [option.strip().strip('"').strip("'") for option in value[1:-1].split('|')] # handle the is-in strings like ['a', 'b', 'c'] or ["d", "e"]
     else:
       value = float(value) if value.isnumeric() else value
     return build_criteria(col, value, data, sign=sign)
